@@ -3,12 +3,12 @@ pragma solidity ^0.8.8;
 
 contract CharityHosting {
     
-    uint32 public numberOfCharitiesRegistered = 0;
+    uint32 private numberOfCharitiesRegistered = 0;
 
     struct Donor{
-        address donorAddress;
-        uint256 amountDonated;
         uint8 vote;
+        uint256 amountDonated;
+        address donorAddress;
     }
     
     struct Charity{
@@ -26,11 +26,11 @@ contract CharityHosting {
 
     mapping (uint32 => Donor[]) charityIdToDonorArray;
 
-    Charity[] private charities;
-
     mapping (string => uint32) charityTokenNameToCharityId;
 
-    function createCharity(string memory _name , string memory _tokenName, string memory _agenda ,string[] memory _tags, address _ownerAddress) public {
+    Charity[] private charities;
+
+    function createCharity(string calldata _name , string calldata _tokenName, string calldata _agenda ,string[] calldata _tags, address _ownerAddress) public {
         Charity memory charity;
         charity.charityId = numberOfCharitiesRegistered++;
         charity.name = _name;                                    //owner address frontend
@@ -49,11 +49,15 @@ contract CharityHosting {
         return charitiess;
     }
 
-    function getCharityByTokenName(string memory _tokenName) public view returns(CharityHosting.Charity memory){
+    function getCharityByTokenName(string calldata _tokenName) public view returns(CharityHosting.Charity memory){
         return charities[charityTokenNameToCharityId[_tokenName]];
     }
 
-    function donate(string memory _tokenName) public payable {
+    function getNumberOfCharitiesRegistered() public view returns (uint32) {
+        return numberOfCharitiesRegistered;
+    }
+
+    function donate(string calldata _tokenName) public payable {
         Donor memory donor;
         uint32 charityId = charityTokenNameToCharityId[_tokenName];
         donor.donorAddress = msg.sender;
@@ -65,15 +69,15 @@ contract CharityHosting {
         charities[charityId].amountRaised += msg.value;
     }
 
-    function getDonorsArrayByTokenName(string memory _tokenName) public view returns(CharityHosting.Donor[] memory) {
+    function getDonorsArrayByTokenName(string calldata _tokenName) public view returns(CharityHosting.Donor[] memory) {
         return charityIdToDonorArray[charityTokenNameToCharityId[_tokenName]];
     }
 
-    function vouch(string memory _tokenName,uint8 _index,uint8 _vote) public {
+    function vouch(string calldata _tokenName,uint8 _index,uint8 _vote) public {
         charityIdToDonorArray[charityTokenNameToCharityId[_tokenName]][_index].vote = _vote;
     }
 
-    function changeCredibility(uint8 _value,string memory _tokenName) public {
+    function changeCredibility(uint8 _value,string calldata _tokenName) public {
         charities[charityTokenNameToCharityId[_tokenName]].credibility = _value;
     } 
     //in frontend we need to calculate changed value //here voteValue = amountFunded by address* +1 or -1

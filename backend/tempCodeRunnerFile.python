@@ -1,0 +1,15 @@
+import base64
+s=str(input("Enter your best pw:"))
+r=''
+for x in s:
+    a=ord(x)
+    b=int(a**1564)
+    b=b%26
+    b+=65
+    r+=chr(b)
+
+r+=str(input("Enter your 2nd best pw:"))
+r=r.encode('utf-8')
+# r=r.hex()
+r=base64.b64encode(r)
+print(r.decode())
