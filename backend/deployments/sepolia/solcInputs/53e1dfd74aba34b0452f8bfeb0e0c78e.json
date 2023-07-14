@@ -1,0 +1,35 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "contracts/CharityHosting.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.8;\n\ncontract CharityHosting {\n    \n    uint32 private numberOfCharitiesRegistered = 0;\n\n    struct Donor{\n        int8 vote;\n        uint256 amountDonated;\n        address donorAddress;\n    }\n    \n    struct Charity{\n        uint32 charityId;\n        uint256 credibility;\n        uint256 amountRaised;\n        string name;\n        string[] tags;\n        string tokenName;\n        string agenda;\n        address ownerAddress;\n    }\n\n    mapping (uint32 => Donor[]) charityIdToDonorArray;\n\n    mapping (string => uint32) charityTokenNameToCharityId;\n\n    mapping (string => bool) tokenNameExists;\n\n    Charity[] private charities;\n\n    function createCharity(string calldata _name , string calldata _tokenName, string calldata _agenda ,string[] calldata _tags, address _ownerAddress) public {\n        require(!tokenNameExists[_tokenName],\"Please Change Name of your Charity, This name already exists\");\n        Charity memory charity;\n        charity.charityId = numberOfCharitiesRegistered++;\n        charity.name = _name;                                    //owner address frontend\n        charity.tokenName = _tokenName;\n        tokenNameExists[_tokenName] = true;\n        charityTokenNameToCharityId[_tokenName]=charity.charityId;\n        charity.agenda = _agenda;\n        charity.tags = _tags;\n        charity.ownerAddress = _ownerAddress;\n        charity.credibility = 50;\n        charities.push(charity);\n    }\n    \n    function getCharityList() public view returns(CharityHosting.Charity[] memory){\n        Charity[] memory charitiess = charities;\n        return charitiess;\n    }\n\n    function getCharityByTokenName(string calldata _tokenName) public view returns(CharityHosting.Charity memory){\n        return charities[charityTokenNameToCharityId[_tokenName]];\n    }\n\n    function getNumberOfCharitiesRegistered() public view returns (uint32) {\n        return numberOfCharitiesRegistered;\n    }\n\n    function donate(string calldata _tokenName) public payable {\n        Donor memory donor;\n        uint32 charityId = charityTokenNameToCharityId[_tokenName];\n        donor.donorAddress = msg.sender;\n        donor.amountDonated = msg.value;\n        charityIdToDonorArray[charityId].push(donor);\n        address charityAddress = charities[charityId].ownerAddress;\n        (bool callSuccess,) = payable (charityAddress).call{value: msg.value}(\"\");\n        require(callSuccess,\"Donation Failed\");\n        charities[charityId].amountRaised += msg.value;\n    }\n\n    function getDonorsArrayByTokenName(string calldata _tokenName) public view returns(CharityHosting.Donor[] memory) {\n        return charityIdToDonorArray[charityTokenNameToCharityId[_tokenName]];\n    }\n\n    function getUpdatedCredentialValue(string calldata _tokenName,int256 _index) internal view returns(int256) {\n        Donor[] memory donorArray = charityIdToDonorArray[charityTokenNameToCharityId[_tokenName]];\n        int256 i;\n        int256 sum=0;\n        for (i= _index; i >= 0; i--) {\n            sum += donorArray[uint256(i)].vote * int256(donorArray[uint256(i)].amountDonated);\n        }\n        return sum;\n    }\n\n    function vouch(string calldata _tokenName, int8 _vote) public {\n        bool isDonor = false;\n        int256 i;\n        int256 sum = 0;\n        Donor[] memory donorArray = charityIdToDonorArray[charityTokenNameToCharityId[_tokenName]];\n        for (i = int256(donorArray.length - 1); i >= 0; i--) {\n            if(msg.sender == donorArray[uint256(i)].donorAddress){\n                require(donorArray[uint256(i)].vote==0,\"Already Voted\");\n                isDonor = true;\n                break;\n            }\n            sum += int256(donorArray[uint256(i)].vote) * int256(donorArray[uint256(i)].amountDonated);\n        }\n        require(isDonor, \"Cannot Vote\");\n        charityIdToDonorArray[charityTokenNameToCharityId[_tokenName]][uint256(i)].vote = _vote;\n        if(i>=0){sum += getUpdatedCredentialValue(_tokenName,i);}\n        int256 amountOfCharity = int256(charities[charityTokenNameToCharityId[_tokenName]].amountRaised);\n        int256 updatedCredibilityValue = 50 + ((sum*50)/amountOfCharity);\n        changeCredibility(updatedCredibilityValue,_tokenName);\n    }\n\n    function changeCredibility(int256 _value,string calldata _tokenName) internal {\n        charities[charityTokenNameToCharityId[_tokenName]].credibility = uint256(_value);\n    } \n\n}"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": false,
+      "runs": 200
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers",
+          "metadata",
+          "devdoc",
+          "userdoc",
+          "storageLayout",
+          "evm.gasEstimates"
+        ],
+        "": [
+          "ast"
+        ]
+      }
+    },
+    "metadata": {
+      "useLiteralContent": true
+    }
+  }
+}

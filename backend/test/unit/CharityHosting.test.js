@@ -106,4 +106,41 @@ const { assert, expect } = require("chai");
                 assert.equal(charity.amountRaised.toString(),sendValue.toString());
             });
         });
+        describe('vouch function', () => {
+            beforeEach( async()=> {
+                await charityHosting.createCharity(
+                    "Name 1",
+                    "name_1",
+                    "for testing",
+                    ["lpu", "cpu"],
+                    "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266"
+                  );
+                  await charityHosting.donate("name_1",{value:sendValue});
+            });
+            it("checks that only donor can vouch", async()=>{
+                const accounts = await ethers.getSigners();
+                const donor = accounts[1];
+                // const donor = (await getNamedAccounts()).donor;
+                const attackerContract = await charityHosting.connect(donor); 
+                await expect(attackerContract.vouch("name_1",1)).to.be.revertedWith("Cannot Vote")
+                const charities = await charityHosting.getCharityList(); 
+                const charity = charities[0];
+                assert.equal(charity.credibility,50);
+            });
+            it("calls change credibility function successfully", async()=>{
+              const accounts = await ethers.getSigners();
+              const donor = accounts[1];
+              const donor1 = accounts[2];
+              await charityHosting.vouch("name_1",1);
+              const donorContract = await charityHosting.connect(donor);
+              await donorContract.donate("name_1",{value:sendValue});
+              await donorContract.vouch("name_1",1);
+              const donor1Contract = await charityHosting.connect(donor1);
+              await donor1Contract.donate("name_1",{value:sendValue});
+              await donor1Contract.vouch("name_1",-1);
+              const charities = await charityHosting.getCharityList(); 
+              const charity = charities[0];
+              assert.equal(charity.credibility.toString(),"66");
+            })
+        });
     });

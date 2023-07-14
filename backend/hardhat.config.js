@@ -12,14 +12,18 @@ module.exports = {
       url: process.env.SEPOLIA_RPC_URL || "",
       accounts:
         process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
-      blockConfirmations:1,
+      blockConfirmations: 3,
       chainId:11155111,
+    },
+    localhost: {
+      url:"http://127.0.0.1:8545",
+      chainId:31337,
     },
   },
   gasReporter: {
     enabled: false,
     outputFile: "gas-report.txt",
-    noColors: false,
+    noColors: true,
     currency: "USD",
   },
   etherscan: {
@@ -28,6 +32,9 @@ module.exports = {
   namedAccounts: {
     deployer: {
       default: 0,
+    },
+    donor: {
+      default: 1,
     },
   },
 };

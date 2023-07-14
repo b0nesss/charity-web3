@@ -6,40 +6,41 @@ contract CharityHosting {
     uint32 private numberOfCharitiesRegistered = 0;
 
     struct Donor{
-        uint8 vote;
+        int8 vote;
         uint256 amountDonated;
         address donorAddress;
     }
     
     struct Charity{
-        uint8 credibility;
         uint32 charityId;
+        uint256 credibility;
         uint256 amountRaised;
-        // uint256 noOfDonors;
         string name;
         string[] tags;
         string tokenName;
         string agenda;
         address ownerAddress;
-        // Donor[] donors;
     }
 
     mapping (uint32 => Donor[]) charityIdToDonorArray;
 
     mapping (string => uint32) charityTokenNameToCharityId;
 
+    mapping (string => bool) tokenNameExists;
+
     Charity[] private charities;
 
     function createCharity(string calldata _name , string calldata _tokenName, string calldata _agenda ,string[] calldata _tags, address _ownerAddress) public {
+        require(!tokenNameExists[_tokenName],"Please Change Name of your Charity, This name already exists");
         Charity memory charity;
         charity.charityId = numberOfCharitiesRegistered++;
         charity.name = _name;                                    //owner address frontend
         charity.tokenName = _tokenName;
+        tokenNameExists[_tokenName] = true;
         charityTokenNameToCharityId[_tokenName]=charity.charityId;
         charity.agenda = _agenda;
         charity.tags = _tags;
         charity.ownerAddress = _ownerAddress;
-        // charity.noOfDonors = 0;
         charity.credibility = 50;
         charities.push(charity);
     }
@@ -73,17 +74,39 @@ contract CharityHosting {
         return charityIdToDonorArray[charityTokenNameToCharityId[_tokenName]];
     }
 
-    function vouch(string calldata _tokenName,uint8 _index,uint8 _vote) public {
-        charityIdToDonorArray[charityTokenNameToCharityId[_tokenName]][_index].vote = _vote;
+    function getUpdatedCredentialValue(string calldata _tokenName,int256 _index) internal view returns(int256) {
+        Donor[] memory donorArray = charityIdToDonorArray[charityTokenNameToCharityId[_tokenName]];
+        int256 i;
+        int256 sum=0;
+        for (i= _index; i >= 0; i--) {
+            sum += donorArray[uint256(i)].vote * int256(donorArray[uint256(i)].amountDonated);
+        }
+        return sum;
     }
 
-    function changeCredibility(uint8 _value,string calldata _tokenName) public {
-        charities[charityTokenNameToCharityId[_tokenName]].credibility = _value;
+    function vouch(string calldata _tokenName, int8 _vote) public {
+        bool isDonor = false;
+        int256 i;
+        int256 sum = 0;
+        Donor[] memory donorArray = charityIdToDonorArray[charityTokenNameToCharityId[_tokenName]];
+        for (i = int256(donorArray.length - 1); i >= 0; i--) {
+            if(msg.sender == donorArray[uint256(i)].donorAddress){
+                require(donorArray[uint256(i)].vote==0,"Already Voted");
+                isDonor = true;
+                break;
+            }
+            sum += int256(donorArray[uint256(i)].vote) * int256(donorArray[uint256(i)].amountDonated);
+        }
+        require(isDonor, "Cannot Vote");
+        charityIdToDonorArray[charityTokenNameToCharityId[_tokenName]][uint256(i)].vote = _vote;
+        if(i>=0){sum += getUpdatedCredentialValue(_tokenName,i);}
+        int256 amountOfCharity = int256(charities[charityTokenNameToCharityId[_tokenName]].amountRaised);
+        int256 updatedCredibilityValue = 50 + ((sum*50)/amountOfCharity);
+        changeCredibility(updatedCredibilityValue,_tokenName);
+    }
+
+    function changeCredibility(int256 _value,string calldata _tokenName) internal {
+        charities[charityTokenNameToCharityId[_tokenName]].credibility = uint256(_value);
     } 
-    //in frontend we need to calculate changed value //here voteValue = amountFunded by address* +1 or -1
-    //changed value can be calculated by initial credibility + ((voteValue/amountRaised)*50)
-    //for this you need to check whether vouch option is available for the user or not from donors array
-    //while looping thru that for searching that particular address u will also have to retrieve the amount funded by that address
-    //then we will use weightage of that to find voteValue as discussed in meet 
 
 }
