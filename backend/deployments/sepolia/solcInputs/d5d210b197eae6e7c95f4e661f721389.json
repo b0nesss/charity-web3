@@ -1,0 +1,35 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "contracts/CharityHosting.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.8;\n\ncontract CharityHosting {\n    \n    uint32 private numberOfCharitiesRegistered = 0;\n\n    struct Donor{\n        uint8 vote;\n        uint256 amountDonated;\n        address donorAddress;\n    }\n    \n    struct Charity{\n        uint8 credibility;\n        uint32 charityId;\n        uint256 amountRaised;\n        // uint256 noOfDonors;\n        string name;\n        string[] tags;\n        string tokenName;\n        string agenda;\n        address ownerAddress;\n        // Donor[] donors;\n    }\n\n    mapping (uint32 => Donor[]) charityIdToDonorArray;\n\n    mapping (string => uint32) charityTokenNameToCharityId;\n\n    Charity[] private charities;\n\n    function createCharity(string calldata _name , string calldata _tokenName, string calldata _agenda ,string[] calldata _tags, address _ownerAddress) public {\n        Charity memory charity;\n        charity.charityId = numberOfCharitiesRegistered++;\n        charity.name = _name;                                    //owner address frontend\n        charity.tokenName = _tokenName;\n        charityTokenNameToCharityId[_tokenName]=charity.charityId;\n        charity.agenda = _agenda;\n        charity.tags = _tags;\n        charity.ownerAddress = _ownerAddress;\n        // charity.noOfDonors = 0;\n        charity.credibility = 50;\n        charities.push(charity);\n    }\n    \n    function getCharityList() public view returns(CharityHosting.Charity[] memory){\n        Charity[] memory charitiess = charities;\n        return charitiess;\n    }\n\n    function getCharityByTokenName(string calldata _tokenName) public view returns(CharityHosting.Charity memory){\n        return charities[charityTokenNameToCharityId[_tokenName]];\n    }\n\n    function getNumberOfCharitiesRegistered() public view returns (uint32) {\n        return numberOfCharitiesRegistered;\n    }\n\n    function donate(string calldata _tokenName) public payable {\n        Donor memory donor;\n        uint32 charityId = charityTokenNameToCharityId[_tokenName];\n        donor.donorAddress = msg.sender;\n        donor.amountDonated = msg.value;\n        charityIdToDonorArray[charityId].push(donor);\n        address charityAddress = charities[charityId].ownerAddress;\n        (bool callSuccess,) = payable (charityAddress).call{value: msg.value}(\"\");\n        require(callSuccess,\"Donation Failed\");\n        charities[charityId].amountRaised += msg.value;\n    }\n\n    function getDonorsArrayByTokenName(string calldata _tokenName) public view returns(CharityHosting.Donor[] memory) {\n        return charityIdToDonorArray[charityTokenNameToCharityId[_tokenName]];\n    }\n\n    function vouch(string calldata _tokenName,uint8 _index,uint8 _vote) public {\n        charityIdToDonorArray[charityTokenNameToCharityId[_tokenName]][_index].vote = _vote;\n    }\n\n    function changeCredibility(uint8 _value,string calldata _tokenName) public {\n        charities[charityTokenNameToCharityId[_tokenName]].credibility = _value;\n    } \n    //in frontend we need to calculate changed value //here voteValue = amountFunded by address* +1 or -1\n    //changed value can be calculated by initial credibility + ((voteValue/amountRaised)*50)\n    //for this you need to check whether vouch option is available for the user or not from donors array\n    //while looping thru that for searching that particular address u will also have to retrieve the amount funded by that address\n    //then we will use weightage of that to find voteValue as discussed in meet \n\n}"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": false,
+      "runs": 200
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers",
+          "metadata",
+          "devdoc",
+          "userdoc",
+          "storageLayout",
+          "evm.gasEstimates"
+        ],
+        "": [
+          "ast"
+        ]
+      }
+    },
+    "metadata": {
+      "useLiteralContent": true
+    }
+  }
+}

@@ -23,7 +23,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     !developmentChains.includes(network.name) &&
     process.env.ETHERSCAN_API_KEY
   ) {
-    await verify(fundMe.address, args);
+    await verify(CharityHosting.address, []);
   }
   log("-----------------------------------------------------------");
 };
