@@ -14,6 +14,22 @@ const { assert, expect } = require("chai");
         charityHosting = await ethers.getContract("CharityHosting", deployer);
       });
       describe("CreateCharity", function () {
+        it("needs a unique token name", async()=>{
+          await charityHosting.createCharity(
+            "Name 1",
+            "name_1",
+            "for testing",
+            ["lpu", "cpu"],
+            "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266"
+          );
+          await expect(charityHosting.createCharity(
+            "NaMe 1",
+            "name_1",
+            "forfsa testing",
+            ["lpus", "capu"],
+            "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266"
+          )).to.be.revertedWith("Please Change Name of your Charity, This name already exists");
+        });
         it("creates a charity org and sets it values as provided in params", async () => {
           await charityHosting.createCharity(
             "Name 1",

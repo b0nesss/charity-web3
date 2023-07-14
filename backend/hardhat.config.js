@@ -12,7 +12,7 @@ module.exports = {
       url: process.env.SEPOLIA_RPC_URL || "",
       accounts:
         process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
-      blockConfirmations: 3,
+      blockConfirmations: 1,
       chainId:11155111,
     },
     localhost: {
