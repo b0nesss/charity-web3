@@ -61,6 +61,7 @@ To test our code you can follow these simple steps:
 ```bash
 git clone https://github.com/b0nesss/charity-web3
 cd charity-web3/backend/
+yarn install
 yarn hardhat deploy --network <YOUR PREFERRED NETWORK >
 yarn hardhat test
 ```
