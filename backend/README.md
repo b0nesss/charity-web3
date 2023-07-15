@@ -32,7 +32,7 @@ The traditional charity sector often lacks transparency, making it challenging f
 
   
 
-This project has two repositories, one for backend and another for <a  href="https://github.com/bhavi-b/charity-web3-next">frontend</a>. The smart contract consisted of many data structures and functions to make it gas efficient and secure and to provide the client with various features like :
+This project has two repositories, one for backend and another for <a  href="https://github.com/b0nesss/charity-list3r-next">frontend</a>. The smart contract consisted of many data structures and functions to make it gas efficient and secure and to provide the client with various features like :
 
 - Listing their organisation
 
@@ -64,7 +64,7 @@ To make the contract gas efficient some data structures were used which used `to
 ## Getting Started
 To test our code you can follow these simple steps:
 ```bash
-git clone https://github.com/b0nesss/charity-web3/tree/master
+git clone --single-branch https://github.com/b0nesss/charity-web3
 cd charity-web3/backend/
 yarn install
 yarn hardhat deploy --network <YOUR PREFERRED NETWORK >
