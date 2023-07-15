@@ -55,7 +55,11 @@ To make the contract gas efficient some data structures were used which used `to
   1. Midway through our project we figured out a vulnerability in our code in the changeCredibility function. We had kept it public for our frontend to access it but then we realised anyone could run a script calling it and could change its value to anything possible. With some help from our mentors we figured its solution out and implemented it.
   2. Being rookies at next.js and react.js we had to make sure that all required methods and properties for integrating the backend with frontend were easily available without making the code vulnerable.
 ## Tools used 
-Backend was made using Solidity and Hardhat , wherein hardhat-deploy plugin was used for easy deployment of the smart contract. Testing feature of hardhat was used to test all the functions wherein we tested 100% of the functions and statements and also a staging test was done. Initially the smart contract was written on Remix IDE which made reviewing of functions and data structures easier due to its interactive UI. 
+- Backend was made using Solidity and Hardhat , wherein hardhat-deploy plugin was used for easy deployment of the smart contract.
+- Testing feature of hardhat was used to test all the functions wherein we tested 100% of the functions and statements and also a staging test was done.
+- Initially the smart contract was written on Remix IDE which made reviewing of functions and data structures easier due to its interactive UI.
+- Alchemy was used for getting a provider for backend.
+- Metamask 
 
 ## Getting Started
 To test our code you can follow these simple steps:
