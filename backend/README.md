@@ -1,4 +1,4 @@
-# Charity Dao
+# Charity List3r
 
   
 
@@ -6,7 +6,7 @@
 
   
 
-**Charity-List3R**, is a A Charity Listing DAO developed during internal hackathon of BlocSoc IITR, where a Charitable Organisation can enroll themselves under the categories it wishes to (e.g. world hunger), and provide regular updates to their funders about their charitable deeds, to increase their credibility score.
+**Charity List3R**, is a A Charity Listing DAO developed during internal hackathon of BlocSoc IITR, where a Charitable Organisation can enroll themselves under the categories it wishes to (e.g. world hunger), and provide regular updates to their funders about their charitable deeds, to increase their credibility score.
 
   
 
@@ -60,7 +60,7 @@ Backend was made using Solidity and Hardhat , wherein hardhat-deploy plugin was 
 To test our code you can follow these simple steps:
 ```bash
 git clone https://github.com/b0nesss/charity-web3
-cd charity-web3/
+cd charity-web3/backend/
 yarn hardhat deploy --network <YOUR PREFERRED NETWORK >
 yarn hardhat test
 ```
