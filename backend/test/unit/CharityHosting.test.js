@@ -143,6 +143,10 @@ const { assert, expect } = require("chai");
                 const charity = charities[0];
                 assert.equal(charity.credibility,50);
             });
+            it("checks the value of vote", async()=>{
+              await expect(charityHosting.vouch("name_1",2)).to.be.revertedWith("Wrong vote value");
+              await expect(charityHosting.vouch("name_1",-2)).to.be.revertedWith("Wrong vote value");
+            });
             it("calls change credibility function successfully", async()=>{
               const accounts = await ethers.getSigners();
               const donor = accounts[1];

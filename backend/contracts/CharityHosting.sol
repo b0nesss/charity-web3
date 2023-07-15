@@ -13,7 +13,7 @@ contract CharityHosting {
     
     struct Charity{
         uint32 charityId;
-        uint256 credibility;
+        uint32 credibility;
         uint256 amountRaised;
         string name;
         string[] tags;
@@ -98,15 +98,17 @@ contract CharityHosting {
             sum += int256(donorArray[uint256(i)].vote) * int256(donorArray[uint256(i)].amountDonated);
         }
         require(isDonor, "Cannot Vote");
+        int8 voteCheck = _vote;
+        require((voteCheck > 0? voteCheck : - voteCheck )==1 , "Wrong vote value");
         charityIdToDonorArray[charityTokenNameToCharityId[_tokenName]][uint256(i)].vote = _vote;
         if(i>=0){sum += getUpdatedCredentialValue(_tokenName,i);}
         int256 amountOfCharity = int256(charities[charityTokenNameToCharityId[_tokenName]].amountRaised);
-        int256 updatedCredibilityValue = 50 + ((sum*50)/amountOfCharity);
+        int32 updatedCredibilityValue = 50 + int32((sum*50)/amountOfCharity);
         changeCredibility(updatedCredibilityValue,_tokenName);
     }
 
-    function changeCredibility(int256 _value,string calldata _tokenName) internal {
-        charities[charityTokenNameToCharityId[_tokenName]].credibility = uint256(_value);
+    function changeCredibility(int32 _value,string calldata _tokenName) internal {
+        charities[charityTokenNameToCharityId[_tokenName]].credibility = uint32(_value);
     } 
 
 }
