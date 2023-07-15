@@ -18,8 +18,9 @@ The traditional charity sector often lacks transparency, making it challenging f
 
   
 
-### How we solve it?
+#### How we solve it?
 1.**Decentralized Charity Listing:** The platform allows users to create and manage a decentralized charity listing DAO. This DAO serves as a collective platform for listing and evaluating charitable organizations.
+
 2.**Improved Transparency:** By providing a platform for public voting and trust score calculation, the DApp enhances transparency in the charity sector. Donors can make informed decisions based on the collective assessment of the community
 
 
