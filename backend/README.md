@@ -59,7 +59,7 @@ Backend was made using Solidity and Hardhat , wherein hardhat-deploy plugin was 
 ## Getting Started
 To test our code you can follow these simple steps:
 ```bash
-git clone https://github.com/b0nesss/charity-web3
+git clone https://github.com/b0nesss/charity-web3/tree/master
 cd charity-web3/backend/
 yarn install
 yarn hardhat deploy --network <YOUR PREFERRED NETWORK >
